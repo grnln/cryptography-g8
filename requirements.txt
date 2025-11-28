@@ -1,0 +1,4 @@
+Django==5.2.7
+django-bootstrap5==23.1.0
+pycryptodome==3.19.0
+dotenv==0.9.9
