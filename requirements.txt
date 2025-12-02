@@ -2,3 +2,5 @@ Django==5.2.7
 django-bootstrap5==23.1.0
 pycryptodome==3.19.0
 dotenv==0.9.9
+scikit-learn==1.7.2
+sentence_transformers==5.1.2
