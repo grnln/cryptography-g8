@@ -56,3 +56,17 @@ class EMR:
 
     def __str__(self):
         return f"{self.name} - {self.national_id}"
+
+@dataclass
+class MergedData:
+    sex: str
+    postal_code: str
+    birth_date: str
+    hospitalization_date: str
+
+    diagnosis: str
+    treatment: str
+    results: str
+
+    def __str__(self):
+        return f"{self.sex} - {self.postal_code} - {self.diagnosis}"

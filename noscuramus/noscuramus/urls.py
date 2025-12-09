@@ -21,4 +21,5 @@ from emr import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.load_dataset),
+    path('merge/', views.merge)
 ]
