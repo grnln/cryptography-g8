@@ -2,7 +2,7 @@ from django.http import HttpResponse
 
 from .emr_parser import parse_csv_to_emr_list
 from .partitioning import vertical_partition
-from .merging import data_merging
+from .merging import *
 from .models import *
 
 def load_dataset(request):
@@ -18,7 +18,11 @@ def load_dataset(request):
 def merge(request):
     tp = MedicalInfo.objects.all()
     ta = AnonQID.objects.all()
-    tm = data_merging(list(tp), list(ta))
+    te = EncryptedID.objects.all()
 
-    output = "<h1>Tm</h1>" + "<br>".join([str(p) for p in tm])
+    tm1 = data_merging_anon(list(tp), list(ta))
+    tm2 = data_merging(list(tp), list(te))
+
+    output = "<h1>Tm1</h1>" + "<br>".join([str(p) for p in tm1])
+    output = "<h1>Tm2</h1>" + "<br>".join([str(p) for p in tm2])
     return HttpResponse(output)

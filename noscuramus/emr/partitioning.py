@@ -1,17 +1,9 @@
 from .models import *
 from .clustering import *
 from .emr_parser import *
-
-from Crypto.Cipher import AES
-from Crypto.PublicKey import RSA
-from Crypto.Random import get_random_bytes
+from .cipher import *
 
 import anonypy, pandas
-
-aes = AES.new(get_random_bytes(32), AES.MODE_EAX)
-
-def cypher_text(t):
-    return aes.encrypt(bytearray(t, encoding = 'utf-8'))
 
 def vertical_partition(t):
     tp = []
@@ -24,13 +16,13 @@ def vertical_partition(t):
 
         # Add all AES-encrypted EIDs and QIDs to Te
         encrypted_id = EncryptedID(
-            name = cypher_text(emr.name),
-            national_id = cypher_text(emr.national_id),
-            social_security_number = cypher_text(emr.social_security_number),
-            sex = cypher_text(emr.sex),
-            postal_code = cypher_text(emr.postal_code),
-            birth_date = cypher_text(str(emr.birth_date)),
-            hospitalization_date = cypher_text(str(emr.hospitalization_date))
+            name = cipher_text(emr.name),
+            national_id = cipher_text(emr.national_id),
+            social_security_number = cipher_text(emr.social_security_number),
+            sex = cipher_text(emr.sex),
+            postal_code = cipher_text(emr.postal_code),
+            birth_date = cipher_text(str(emr.birth_date)),
+            hospitalization_date = cipher_text(str(emr.hospitalization_date))
         )
         te.append(encrypted_id)
     
