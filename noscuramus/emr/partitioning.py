@@ -10,6 +10,10 @@ def vertical_partition(t):
     te = []
     ta = []
 
+    MedicalInfo.objects.all().delete()
+    EncryptedID.objects.all().delete()
+    AnonQID.objects.all().delete()
+
     # Obtain Te and Tp
     for i in range(len(t)):
         emr = t[i]
