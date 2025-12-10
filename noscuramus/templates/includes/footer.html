@@ -1,0 +1,22 @@
+{% load static %}
+<footer class="sevi-footer" role="contentinfo" aria-label="Site footer">
+
+	<div class="container footer-bottom">
+		<div class="legal">
+			<div>
+				<span>&copy; <span id="sevi-year"></span> Noscuramus</span>
+			</div>
+
+			<div class="actions">
+				<nav class="footer-nav" aria-label="Footer navigation">
+					<a href="/" title="Inicio">Inicio</a>
+				</nav>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// Insert current year
+		(function(){var y=new Date().getFullYear();var el=document.getElementById('sevi-year');if(el)el.textContent=y;})();
+	</script>
+</footer>

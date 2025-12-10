@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block override_style %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}?v=2">
+
+{% endblock %}
+
+{% block content %}
+<main class="container py-4">
+    <h2 class="text-center mb-4">Gestión de la Base de Datos</h2>
+
+    <div class="db-buttons">
+        <form method="post" action="{% url 'load_db' %}">
+            {% csrf_token %}
+            <button type="submit" class="load-btn">Cargar DB</button>
+        </form>
+
+        <form method="post" action="{% url 'erase_db' %}">
+            {% csrf_token %}
+            <button type="submit" class="erase-btn">Eliminar DB</button>
+        </form>
+    </div>
+</main>
+{% endblock %}

@@ -1,9 +1,20 @@
 from django.http import HttpResponse
-
+from django.shortcuts import render, redirect
 from .emr_parser import parse_csv_to_emr_list
 from .partitioning import vertical_partition
 from .merging import *
 from .models import *
+
+def home(request):
+    return render(request, 'home.html')
+
+def database(request):
+    context = {
+        "tp": EncryptedID.objects.order_by("id"),
+        "te": AnonQID.objects.order_by("id"),
+        "ta": MedicalInfo.objects.order_by("id"),
+    }
+    return render(request, "database.html", context)
 
 def load_dataset(request):
     emrs = parse_csv_to_emr_list('../dataset/sample_dataset.csv')
@@ -12,11 +23,14 @@ def load_dataset(request):
     te.sort(key=lambda x: x.id)
     ta.sort(key=lambda x: x.id)
 
-    output = "<h1>Tp</h1>" + "<br>".join([str(p) for p in tp[:10]])
-    output += "<h1>Te</h1>" + "<br>".join([str(p) for p in te[:10]])
-    output += "<h1>Ta</h1>" + "<br>".join([str(p) for p in ta[:10]])
-    
-    return HttpResponse(output)
+    return redirect('database')
+
+def erase_dataset(request):
+    EncryptedID.objects.all().delete()
+    AnonQID.objects.all().delete()
+    MedicalInfo.objects.all().delete()
+
+    return redirect('database')
 
 def merge(request):
     tp = MedicalInfo.objects.all()

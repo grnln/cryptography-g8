@@ -20,6 +20,9 @@ from emr import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.load_dataset),
+    path('', views.home, name='home'),
+    path('database', views.database, name='database'),
+    path('database/load', views.load_dataset, name='load_db'),
+    path('database/erase', views.erase_dataset, name='erase_db'),
     path('merge/', views.merge)
 ]

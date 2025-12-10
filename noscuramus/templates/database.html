@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block override_style %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/database.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="container py-4">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tp">Tabla: IDs Encriptados</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#te">Tabla: QIDs Anonimizados</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#ta">Tabla: Información Médica</a></li>
+    </ul>
+
+    <div class="tab-content mt-3">
+        <!-- TABLE 1 -->
+        <div class="tab-pane fade show active" id="tp">
+            <h4>IDs Encriptados</h4>
+            <table id="tp_table">
+                <thead>
+                    <tr>
+                        <th style="width:5%;">ID</th>
+                        <th class="wide">Nombre</th>
+                        <th class="wide">Documento Nacional</th>
+                        <th class="wide">Número de Seguridad Social</th>
+                        <th style="width:5%;">Sexo</th>
+                        <th style="width:5%;">Código Postal</th>
+                        <th class="wide">Fecha de Nacimiento</th>
+                        <th class="wide">Fecha de Hospitalización</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in tp %}
+                    <tr>
+                        <td>{{ row.id }}</td>
+                        <td>{{ row.name }}</td>
+                        <td>{{ row.national_id }}</td>
+                        <td>{{ row.social_security_number }}</td>
+                        <td>{{ row.sex }}</td>
+                        <td>{{ row.postal_code }}</td>
+                        <td>{{ row.birth_date }}</td>
+                        <td>{{ row.hospitalization_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="pagination" id="tp_table_pagination">
+                <button class="prev">Anterior</button>
+                <button class="next">Siguiente</button>
+            </div>
+        </div>
+
+        <!-- TABLE 2 -->
+        <div class="tab-pane fade" id="te">
+            <h4>QIDs Anonimizados</h4>
+            <table id="te_table">
+                <thead>
+                    <tr>
+                        <th style="width:4%;">ID</th>
+                        <th style="width:4%;">Sexo</th>
+                        <th style="width:7%;">Código postal</th>
+                        <th>Fecha de Nacimiento</th>
+                        <th>Fecha de Hospitalización</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in te %}
+                    <tr>
+                        <td>{{ row.id }}</td>
+                        <td>{{ row.sex }}</td>
+                        <td>{{ row.postal_code }}</td>
+                        <td>
+                        ({{ row.birth_date|slice:":10" }}, {{ row.birth_date|slice:"20:30" }})
+                        </td>
+                        <td>
+                        ({{ row.hospitalization_date|slice:":10" }}, {{ row.hospitalization_date|slice:"20:30" }})
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="pagination" id="te_table_pagination">
+                <button class="prev">Anterior</button>
+                <button class="next">Siguiente</button>
+            </div>
+        </div>
+
+        <!-- TABLE 3 -->
+        <div class="tab-pane fade" id="ta">
+            <h4>Información Médica</h4>
+            <table id="ta_table">
+                <thead>
+                    <tr>
+                        <th style="width:5%;">ID</th>
+                        <th>Diagnóstico</th>
+                        <th>Tratamiento</th>
+                        <th>Resultados</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in ta %}
+                    <tr>
+                        <td>{{ row.id }}</td>
+                        <td>{{ row.diagnosis }}</td>
+                        <td>{{ row.treatment }}</td>
+                        <td>{{ row.results }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="pagination" id="ta_table_pagination">
+                <button class="prev">Anterior</button>
+                <button class="next">Siguiente</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="{% static 'js/database.js' %}"></script>   
+</main>
+{% endblock %}
