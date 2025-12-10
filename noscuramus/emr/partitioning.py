@@ -3,7 +3,8 @@ from .clustering import *
 from .emr_parser import *
 from .cipher import *
 
-import anonypy, pandas
+import pandas
+from .anonypy_custom import Preserver
 
 def vertical_partition(t):
     tp = []
@@ -20,6 +21,7 @@ def vertical_partition(t):
 
         # Add all AES-encrypted EIDs and QIDs to Te
         encrypted_id = EncryptedID(
+            id = emr.id,
             name = cipher_text(emr.name),
             national_id = cipher_text(emr.national_id),
             social_security_number = cipher_text(emr.social_security_number),
@@ -32,32 +34,49 @@ def vertical_partition(t):
     
         # Add all medical information to Tp, verbatim
         medical_info = MedicalInfo(
+            id = emr.id,
             diagnosis = emr.diagnosis,
             treatment = emr.treatment,
             results = emr.results
         )
         tp.append(medical_info)
 
-    # clusters = create_clusters(create_semantic_entries(t))
-    
-    qids = [[t[i].sex, t[i].postal_code, t[i].birth_date, t[i].hospitalization_date] for i in range(len(t))]
-    columns = ['sex', 'postal_code', 'birth_date', 'hospitalization_date']
-    
-    frame = pandas.DataFrame(data = qids, columns = columns)
-    frame = frame.astype({'sex': 'category', 'postal_code': 'int', 'birth_date': 'datetime64[ns]', 'hospitalization_date': 'datetime64[ns]'})
-    
-    preserver = anonypy.Preserver(frame, columns, 'sex')
-    anon_qids = preserver.anonymize_k_anonymity(k = 2)
+    cluster_assignment, clustered_sentences = create_clusters(create_semantic_entries(t))
+
+    for emr in t:
+        emr.cluster_id = int(cluster_assignment[emr.id - 1])
+
+    qids = [[t[i].id, t[i].sex, t[i].postal_code, t[i].birth_date, t[i].hospitalization_date, t[i].cluster_id] 
+            for i in range(len(t))]
+    columns = ['id', 'sex', 'postal_code', 'birth_date', 'hospitalization_date', 'cluster_id']
+
+    frame = pandas.DataFrame(data=qids, columns=columns)
+    frame = frame.astype({
+        'id': 'int',
+        'sex': 'category',
+        'postal_code': 'int',
+        'birth_date': 'datetime64[ns]',
+        'hospitalization_date': 'datetime64[ns]',
+        'cluster_id': 'int'
+    })
+
+    preserver = Preserver(
+        frame,
+        ['postal_code', 'birth_date', 'hospitalization_date'],
+        'cluster_id',
+        ['sex', 'id']
+    )
+    anon_qids = preserver.anonymize_t_closeness(k=10, p=0.2)
 
     for qid in anon_qids:
-        anon_qid = AnonQID(
-            sex = qid['sex'],
-            postal_code = qid['postal_code'][0],
-            birth_date = qid['birth_date'][0],
-            hospitalization_date = qid['hospitalization_date'][0]
-        )
-
-        for i in range(qid['count']):
+        for i in range(0, len(qid['id'])):
+            anon_qid = AnonQID(
+                id = qid['id'][i],
+                sex = qid['sex'][i],
+                postal_code = qid['postal_code'][0],
+                birth_date = qid['birth_date'][0],
+                hospitalization_date = qid['hospitalization_date'][0]
+            )
             ta.append(anon_qid)
 
     MedicalInfo.objects.bulk_create(tp)

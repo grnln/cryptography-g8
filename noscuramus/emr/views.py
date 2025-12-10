@@ -7,11 +7,14 @@ from .models import *
 
 def load_dataset(request):
     emrs = parse_csv_to_emr_list('../dataset/sample_dataset.csv')
-    tp, te, ta = vertical_partition(emrs)
-    
-    output = "<h1>Tp</h1>" + "<br>".join([str(p) for p in tp])
-    output += "<h1>Te</h1>" + "<br>".join([str(p) for p in te])
-    output += "<h1>Ta</h1>" + "<br>".join([str(p) for p in ta])
+    (tp, te, ta) = vertical_partition(emrs)
+    tp.sort(key=lambda x: x.id)
+    te.sort(key=lambda x: x.id)
+    ta.sort(key=lambda x: x.id)
+
+    output = "<h1>Tp</h1>" + "<br>".join([str(p) for p in tp[:10]])
+    output += "<h1>Te</h1>" + "<br>".join([str(p) for p in te[:10]])
+    output += "<h1>Ta</h1>" + "<br>".join([str(p) for p in ta[:10]])
     
     return HttpResponse(output)
 
