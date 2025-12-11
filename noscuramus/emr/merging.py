@@ -7,6 +7,7 @@ def data_merging_anon(tp, ta):
 
     for i in range(len(tp)):
         merged_data = AnonMergedData(
+            id = ta[i].id,
             sex = ta[i].sex,
             postal_code = ta[i].postal_code,
             birth_date = ta[i].birth_date,
@@ -16,6 +17,8 @@ def data_merging_anon(tp, ta):
             results = tp[i].results
         )
         t.append(merged_data)
+        
+    t.sort(key=lambda x: x.id)
     return t
 
 def data_merging(tp, te):
@@ -23,6 +26,7 @@ def data_merging(tp, te):
     
     for i in range(len(tp)):
         merged_data = MergedData(
+            id = te[i].id,
             name = decipher_text(te[i].name),
             national_id = decipher_text(te[i].national_id),
             social_security_number = decipher_text(te[i].social_security_number),
@@ -35,4 +39,6 @@ def data_merging(tp, te):
             results = tp[i].results
         )
         t.append(merged_data)
+
+    t.sort(key=lambda x: x.id)
     return t

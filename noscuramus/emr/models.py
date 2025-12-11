@@ -59,6 +59,8 @@ from datetime import date
 
 @dataclass
 class AnonMergedData:
+    id: int
+
     sex: str
     postal_code: str
     birth_date: str
@@ -73,6 +75,8 @@ class AnonMergedData:
 
 @dataclass
 class MergedData:
+    id: int
+    
     name: str
     national_id: str
     social_security_number: str

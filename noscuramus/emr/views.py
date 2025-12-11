@@ -63,9 +63,9 @@ def search_results(request):
     return render(request, 'search_results.html', context)
 
 def merge(request):
-    tp = MedicalInfo.objects.order_by('id')
-    ta = AnonQID.objects.order_by('id')
-    te = EncryptedID.objects.order_by('id')
+    tp = MedicalInfo.objects.order_by("id")
+    ta = AnonQID.objects.order_by("id")
+    te = EncryptedID.objects.order_by("id")
 
     tm1 = data_merging_anon(list(tp), list(ta))
     tm2 = data_merging(list(tp), list(te))
