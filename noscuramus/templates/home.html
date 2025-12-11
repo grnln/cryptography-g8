@@ -11,15 +11,17 @@
     <h2 class="text-center mb-4v home-title">Gestión de EMRs</h2>
 
     <div class="home-buttons">
-        <form method="post" action="{% url 'load_db' %}">
-            {% csrf_token %}
-            <button type="submit" class="load-btn">Cargar EMRs</button>
-        </form>
-
-        <form method="post" action="{% url 'erase_db' %}">
-            {% csrf_token %}
-            <button type="submit" class="erase-btn">Eliminar EMRs</button>
-        </form>
+        {% if num_emrs <= 0 %}
+            <form method="post" action="{% url 'load_db' %}">
+                {% csrf_token %}
+                <button type="submit" class="load-btn">Cargar EMRs</button>
+            </form>
+        {% else %}
+            <form method="post" action="{% url 'erase_db' %}">
+                {% csrf_token %}
+                <button type="submit" class="erase-btn">Eliminar EMRs</button>
+            </form>
+        {% endif %}
     </div>
 </main>
 {% endblock %}
