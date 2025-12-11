@@ -27,5 +27,8 @@ urlpatterns = [
     path('load-csv', views.loaded_dataset, name='load_csv'),
     path('partition', views.vertical_partition, name='vertical_partition'),
     path('search/', views.search, name='search'),
-    path('search-results/', views.search_results, name='search_results')
+    path('search-results/', views.search_results, name='search_results'),
+    path('merge/', views.merge, name='merge'),
+    path('merge/anon', views.merge_anon, name='merge_anon'),
+    path('merge/full', views.merge_full, name='merge_full'),
 ]

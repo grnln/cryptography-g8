@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block override_style %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<style>
+    .merge-btn {
+        display: inline-block;
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        margin: 10px;
+    }
+
+    .merge-btn-anon {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .merge-btn-anon:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+    }
+
+    .merge-btn-full {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .merge-btn-full:hover {
+        background-color: #1e7e34;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="text-center mb-5">Seleccionar Opción de Fusión</h2>
+            
+            <div class="text-center">
+                <a href="{% url 'merge_anon' %}" style="width: 40%;" class="merge-btn merge-btn-anon">Fusión anonimizada</a>
+                <a href="{% url 'merge_full' %}" style="width: 40%;" class="merge-btn merge-btn-full">Fusión completa</a>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

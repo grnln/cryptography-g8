@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block override_style %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/database.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="container py-4">
+    <h2 class="mb-4">Datos Fusionados (anonimizados)</h2>
+    
+    <table id="merged_table">
+        <thead>
+            <tr>
+                <th style="width:5%;">ID</th>
+                <th style="width:5%;">Sexo</th>
+                <th style="width:7%;">Código Postal</th>
+                <th>Fecha de Nacimiento</th>
+                <th>Fecha de Hospitalización</th>
+                <th>Diagnóstico</th>
+                <th>Tratamiento</th>
+                <th>Resultados</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in merged_data %}
+            <tr>
+                <td>{{ row.id }}</td>
+                <td>{{ row.sex }}</td>
+                <td>{{ row.postal_code }}</td>
+                <td>
+                ({{ row.birth_date|slice:":10" }}, {{ row.birth_date|slice:"20:30" }})
+                </td>
+                <td>
+                ({{ row.hospitalization_date|slice:":10" }}, {{ row.hospitalization_date|slice:"20:30" }})
+                </td>
+                <td>{{ row.diagnosis }}</td>
+                <td>{{ row.treatment }}</td>
+                <td>{{ row.results }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="pagination" id="merged_table_pagination">
+        <button class="prev">Anterior</button>
+        <button class="next">Siguiente</button>
+    </div>
+
+    <script src="{% static 'js/database.js' %}"></script>
+</main>
+{% endblock %}

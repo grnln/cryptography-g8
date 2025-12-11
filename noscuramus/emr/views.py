@@ -63,13 +63,26 @@ def search_results(request):
     return render(request, 'search_results.html', context)
 
 def merge(request):
+    return render(request, 'choose_merge.html')
+
+def merge_anon(request):
     tp = MedicalInfo.objects.order_by("id")
     ta = AnonQID.objects.order_by("id")
-    te = EncryptedID.objects.order_by("id")
 
     tm1 = data_merging_anon(list(tp), list(ta))
+
+    context = {
+        'merged_data': tm1
+    }
+    return render(request, 'anon_merge.html', context)
+
+def merge_full(request):
+    tp = MedicalInfo.objects.order_by("id")
+    te = EncryptedID.objects.order_by("id")
+
     tm2 = data_merging(list(tp), list(te))
 
-    output = "<h1>Tm1</h1>" + "<br>".join([str(p) for p in tm1])
-    output += "<h1>Tm2</h1>" + "<br>".join([str(p) for p in tm2])
-    return HttpResponse(output)
+    context = {
+        'merged_data': tm2
+    }
+    return render(request, 'full_merge.html', context)

@@ -67,7 +67,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    makePaginate("tp_table", 10);
-    makePaginate("te_table", 10);
-    makePaginate("ta_table", 10);
+    const tablesToPaginate = ["tp_table", "te_table", "ta_table", "merged_table"];
+    tablesToPaginate.forEach(tableId => {
+        if (document.getElementById(tableId)) {
+            makePaginate(tableId, 10);
+        }
+    });
 });
