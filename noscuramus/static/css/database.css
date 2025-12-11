@@ -36,14 +36,16 @@ th.xwide { width: 30%; }
     justify-content: flex-end;
     gap: 5px;
 }
+
 .pagination button {
     padding: 4px 8px;
     cursor: pointer;
 }
+
 .pagination button {
     padding: 6px 12px;
-    border: 1px solid #007bff;
-    background-color: #007bff;
+    border: 1px solid #a8245f;
+    background-color: #a8245f;
     color: white;
     border-radius: 4px;
     cursor: pointer;
@@ -52,7 +54,8 @@ th.xwide { width: 30%; }
 }
 
 .pagination button:hover:not(:disabled) {
-    background-color: #0056b3;
+    background-color: #730f3c;
+    background-color: #730f3c;
 }
 
 .pagination button:disabled {
@@ -60,4 +63,16 @@ th.xwide { width: 30%; }
     color: #6c757d;
     border-color: #dee2e6;
     cursor: not-allowed;
+}
+
+#loading-text {
+    font-weight: bold;
+    margin-top: 10px;
+    color: #182549;
+}
+
+.table-header {
+    background: #182549;
+    color: white;
+    
 }

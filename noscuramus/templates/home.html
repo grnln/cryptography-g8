@@ -7,19 +7,21 @@
 {% endblock %}
 
 {% block content %}
-<main class="container py-4">
-    <h2 class="text-center mb-4">Gestión de EMRs</h2>
+<main class="home-container container py-4">
+    <h2 class="text-center mb-4v home-title">Gestión de EMRs</h2>
 
-    <div class="db-buttons">
-        <form method="post" action="{% url 'load_db' %}">
-            {% csrf_token %}
-            <button type="submit" class="load-btn">Cargar EMRs</button>
-        </form>
-
-        <form method="post" action="{% url 'erase_db' %}">
-            {% csrf_token %}
-            <button type="submit" class="erase-btn">Eliminar EMRs</button>
-        </form>
+    <div class="home-buttons">
+        {% if num_emrs <= 0 %}
+            <form method="post" action="{% url 'load_db' %}">
+                {% csrf_token %}
+                <button type="submit" class="load-btn">Cargar EMRs</button>
+            </form>
+        {% else %}
+            <form method="post" action="{% url 'erase_db' %}">
+                {% csrf_token %}
+                <button type="submit" class="erase-btn">Eliminar EMRs</button>
+            </form>
+        {% endif %}
     </div>
 </main>
 {% endblock %}

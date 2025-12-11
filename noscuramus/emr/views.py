@@ -8,7 +8,8 @@ from .integrity import hash_emr, remoteIntegrityCheck
 from django.http import JsonResponse, HttpResponse
 
 def home(request):
-    return render(request, 'home.html')
+    num_emrs = len(EMR.objects.all())
+    return render(request, 'home.html', {'num_emrs': num_emrs})
 
 def database(request):
     context = {
@@ -41,6 +42,7 @@ def erase_dataset(request):
     EncryptedID.objects.all().delete()
     AnonQID.objects.all().delete()
     MedicalInfo.objects.all().delete()
+    EMR.objects.all().delete()
 
     return redirect('database')
 

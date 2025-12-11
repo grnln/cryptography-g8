@@ -1,3 +1,15 @@
+@font-face {
+    font-family: 'Unageo';
+    src: url('../fonts/Unageo-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-display: swap;
+}
+
+.home-title {
+    font-family: "Unageo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 6rem;
+}
+
 body {
     line-height: 1.5;
     margin: 0;
@@ -21,72 +33,152 @@ body {
     padding: 24px;
 }
 
-/* Hero section */
-.hero {
-    display: grid;
-    grid-template-columns: 1fr 420px;
-    gap: 24px;
+.home-container {
+    margin-top: 10rem;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    
-    padding: 36px;
-    background: #ffffff;
-    border-radius: 12px;
-    border: 1px solid rgba(0,0,0,0.04);
-    
-    box-shadow: 0 12px 40px rgba(16, 24, 40, 0.12);
 }
 
-.hero .intro h1 {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #176ae8;
-    margin: 0 0 12px;
+.home-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
 }
 
-.hero .intro p {
-    color: var(--muted);
-    margin: 0 0 18px;
+.load-btn {
+    padding: 12px;
+    width: 200px;
+    border-radius: 6px;
+    border: 2px #33477d solid;
+    background: #33477d;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.load-btn:hover {
+    transform: scale(1.005);
+    box-shadow: 0 6px 12px #98a6cd;
+}
+
+.load-btn:active {
+    background: #182549;
+    border: 2px #182549 solid;
+    color: white;
+    transform: translateY(2px);
+}
+
+.erase-btn {
+    padding: 12px;
+    width: 200px;
+    border-radius: 6px;
+    border: 2px #a8245f solid;
+    background: #a8245f;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.erase-btn:hover {
+    transform: scale(1.005);
+    box-shadow: 0 8px 12px #a8245f4d;
+}
+
+.erase-btn:active {
+    background: #730f3c;
+    border: 2px #730f3c solid;
+    color: white;
+    transform: translateY(2px);
 }
 
 h1, h2, h3, h4 {
     color: #343a40;
 }
 
-.db-buttons {
-    margin-bottom: 30px;
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-}
-
-.db-buttons button {
-    padding: 10px 20px;
-    border: none;
+.db-btn {
+    padding: 12px;
+    width: 360px;
     border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
+    border: 2px #33477d solid;
+    background: #33477d;
     color: white;
-    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-.db-buttons .load-btn {
-    background-color: #28a745;
+.db-btn:hover {
+    background: #182549;
+    border: 2px #182549 solid;
+    color: white;
+    box-shadow: 0 6px 12px #98a6cd;
 }
 
-.db-buttons .load-btn:hover {
-    background-color: #218838;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+.db-btn:active {
+    background: #182549;
+    border: 2px #182549 solid;
+    transform: translateY(2px);
+    color: white;
 }
 
-.db-buttons .erase-btn {
-    background-color: #dc3545;
+.success-message-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 14px;
+    color: #43b180;
+    font-weight: 500;
+    border: 2px #43b180 solid;
+    border-radius: 8px;
+    width: 100%;
+    height: 50px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    gap: 8px;
 }
 
-.db-buttons .erase-btn:hover {
-    background-color: #c82333;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+.success-icon {
+    width: 28px;
+    height: auto;
+}
+
+.search-container {
+    margin-top: 10rem;
+}
+
+.search-label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-family: "Unageo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 2rem;
+    color: #343a40;
+
+}
+
+.search-input {
+    height: 50px;
+    border-radius: 25px;
+}
+
+.search-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    padding-top: 2px;
+    background-color: #33477d;
+}
+
+.search-button:hover {
+    background-color: #182549 !important;
+}
+
+.search-button:active {
+    background-color: #33477d !important;
+}
+
+.noscuramus {
+    color: #343a40;
 }
