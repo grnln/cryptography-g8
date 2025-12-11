@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .emr_parser import parse_csv_to_emr_list
-from .partitioning import vertical_partition
+from .partitioning import vertical_data_partitioning
 from .merging import *
 from .models import *
 
@@ -18,7 +18,17 @@ def database(request):
 
 def load_dataset(request):
     emrs = parse_csv_to_emr_list('../dataset/sample_dataset.csv')
-    (tp, te, ta) = vertical_partition(emrs)
+    return redirect('load_csv')
+
+def loaded_dataset(request):
+    emrs = EMR.objects.order_by('id')
+    context = {'emrs': emrs}
+    return render(request, 'load_csv.html', context)
+
+def vertical_partition(request):
+    emrs = EMR.objects.order_by('id')
+
+    (tp, te, ta) = vertical_data_partitioning(emrs)
     tp.sort(key=lambda x: x.id)
     te.sort(key=lambda x: x.id)
     ta.sort(key=lambda x: x.id)

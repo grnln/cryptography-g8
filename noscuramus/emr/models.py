@@ -1,6 +1,23 @@
 from django.db import models
 
-# Create your models here.
+class EMR(models.Model):
+    id = models.BigAutoField(primary_key = True)
+
+    name = models.CharField(max_length = 255)
+    national_id = models.CharField(max_length = 255)
+    social_security_number = models.CharField(max_length = 255)
+
+    sex = models.CharField(max_length = 255)
+    postal_code = models.CharField(max_length = 255)
+    birth_date = models.DateField()
+    hospitalization_date = models.DateField()
+
+    diagnosis = models.CharField(max_length = 255)
+    treatment = models.TextField()
+    results = models.TextField()
+
+    def __str__(self):
+        return f"{self.name} - {self.national_id}"
 
 class MedicalInfo(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -39,23 +56,6 @@ class EncryptedID(models.Model):
 
 from dataclasses import dataclass
 from datetime import date
-
-@dataclass
-class EMR:
-    id: int
-    name: str
-    national_id: str
-    social_security_number: str
-    sex: str
-    postal_code: str
-    birth_date: date
-    hospitalization_date: date
-    diagnosis: str
-    treatment: str
-    results: str
-
-    def __str__(self):
-        return f"{self.name} - {self.national_id}"
 
 @dataclass
 class AnonMergedData:

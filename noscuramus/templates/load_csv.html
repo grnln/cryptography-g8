@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block override_style %}
+<link rel = "stylesheet" href = "{% static 'css/home.css' %}?v=2">
+<link rel="stylesheet" href="{% static 'css/database.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<main class = "container py-4">
+    <h2 class = "text-center mb-4">Set de datos cargado</h2>
+
+    <div class="tab-pane fade show active" id="tp">
+        <h4>Datos en bruto</h4>
+        <table id="tp_table">
+            <thead>
+                <tr>
+                    <th style="width:5%;">ID</th>
+                    <th class="wide">Nombre</th>
+                    <th class="wide">Documento Nacional</th>
+                    <th class="wide">Número de Seguridad Social</th>
+                    <th style="width:5%;">Sexo</th>
+                    <th style="width:5%;">Código Postal</th>
+                    <th class="wide">Fecha de Nacimiento</th>
+                    <th class="wide">Fecha de Hospitalización</th>
+                    <th class="wide">Diagnóstico</th>
+                    <th class="wide">Tratamiento</th>
+                    <th class="wide">Resultados</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in emrs %}
+                <tr>
+                    <td>{{ row.id }}</td>
+                    <td>{{ row.name }}</td>
+                    <td>{{ row.national_id }}</td>
+                    <td>{{ row.social_security_number }}</td>
+                    <td>{{ row.sex }}</td>
+                    <td>{{ row.postal_code }}</td>
+                    <td>{{ row.birth_date }}</td>
+                    <td>{{ row.hospitalization_date }}</td>
+                    <td>{{ row.diagnosis }}</td>
+                    <td>{{ row.treatment }}</td>
+                    <td>{{ row.results }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination" id="tp_table_pagination">
+            <button class="prev">Anterior</button>
+            <button class="next">Siguiente</button>
+        </div>
+    </div>
+
+    <div class = "db-buttons d-flex flex-column align-items-center">
+        <form id = "partition-form" method = "post" action = "{% url 'vertical_partition' %}">
+            {% csrf_token %}
+            <button type = "submit" class = "load-btn" id = "partition-btn">Partición vertical de datos</button>
+        </form>
+        <p id = "loading-text" hidden>Cargando...</p>
+    </div>
+    <script src="{% static 'js/database.js' %}"></script>
+    <script src="{% static 'js/load_csv.js' %}"></script>
+</main>
+{% endblock %}

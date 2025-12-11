@@ -6,7 +6,7 @@ from .cipher import *
 import pandas
 from .anonypy_custom import Preserver
 
-def vertical_partition(t):
+def vertical_data_partitioning(t):
     tp = []
     te = []
     ta = []

@@ -4,6 +4,8 @@ from .models import EMR
 
 def parse_csv_to_emr_list(csv_path):
     emr_list = []
+    EMR.objects.all().delete()
+
     with open(csv_path, newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for idx, row in enumerate(reader, start=1):
@@ -25,4 +27,5 @@ def parse_csv_to_emr_list(csv_path):
             )
 
             emr_list.append(emr_obj)
+    EMR.objects.bulk_create(emr_list)
     return emr_list
