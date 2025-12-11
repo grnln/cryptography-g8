@@ -9,19 +9,22 @@
 
 {% block content %}
 <main class = "container py-4">
-    <h2 class = "text-center mb-4">Set de datos cargado</h2>
-
+    <div class = "success-message-container">
+        <img src="{% static 'images/green-tick.png' %}" alt="" class="success-icon">
+        <div class ="success-message">Set de datos cargado correctamente</div>
+    </div>
+    
     <div class="tab-pane fade show active" id="tp">
-        <h4>Datos en bruto</h4>
+        <h3 class = "text-center"><b>Datos en bruto</b></h3>
         <table id="tp_table">
             <thead>
-                <tr>
-                    <th style="width:5%;">ID</th>
+                <tr class="table-header">
+                    <th style="width:6%;">ID</th>
                     <th class="wide">Nombre</th>
                     <th class="wide">Documento Nacional</th>
                     <th class="wide">Número de Seguridad Social</th>
-                    <th style="width:5%;">Sexo</th>
-                    <th style="width:5%;">Código Postal</th>
+                    <th style="width:6%;">Sexo</th>
+                    <th style="width:6%;">Código Postal</th>
                     <th class="wide">Fecha de Nacimiento</th>
                     <th class="wide">Fecha de Hospitalización</th>
                     <th class="wide">Diagnóstico</th>
@@ -53,10 +56,10 @@
         </div>
     </div>
 
-    <div class = "db-buttons d-flex flex-column align-items-center">
+    <div class = "d-flex flex-column align-items-center">
         <form id = "partition-form" method = "post" action = "{% url 'vertical_partition' %}">
             {% csrf_token %}
-            <button type = "submit" class = "load-btn" id = "partition-btn">Partición vertical de datos</button>
+            <button type = "submit" class = "db-btn" id = "partition-btn">Realizar partición vertical de datos</button>
         </form>
         <p id = "loading-text" hidden>Cargando...</p>
     </div>
