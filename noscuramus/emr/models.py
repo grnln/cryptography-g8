@@ -18,6 +18,14 @@ class EMR(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.national_id}"
+    
+class Checksum(models.Model):
+    id = models.BigAutoField(primary_key = True)
+    checksum = models.CharField(max_length = 255)
+
+    def __str__(self):
+        return f"{self.name} - {self.national_id}"
+
 
 class MedicalInfo(models.Model):
     id = models.BigAutoField(primary_key=True)

@@ -1,29 +1,116 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block override_style %}
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
 <link rel="stylesheet" href="{% static 'css/database.css' %}">
-{% endblock %}
+<style>
+    .hash-display {
+        background-color: #f5f5f5;
+        padding: 8px;
+        border-radius: 4px;
+        word-break: break-all;
+        font-family: monospace;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
 
-{% block content %}
-<main class="container py-4">
-    <h2 class="mb-4">Datos Fusionados (completos)</h2>
+    th.no-resize .resizer {
+        display: none;
+    }
+
+    .integrity-btn {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
     
+    .integrity-btn:hover {
+        background-color: #0056b3;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 5% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modal-header {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+    
+    .modal-body {
+        margin-bottom: 15px;
+        line-height: 1.6;
+    }
+    
+    .integrity-valid {
+        color: #28a745;
+        font-weight: bold;
+    }
+    
+    .integrity-invalid {
+        color: #dc3545;
+        font-weight: bold;
+    }
+    
+    .close-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-left: 10px;
+    }
+
+    .close-btn:hover {
+        background-color: #0056b3;
+        transition: background-color 0.3s;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<main class="container py-4" style="max-width: none;">
+    <h2 class="mb-4">Tablas Fusionadas (completo)</h2>
     <table id="merged_table">
         <thead>
             <tr>
                 <th style="width:5%;">ID</th>
-                <th class="wide">Nombre</th>
-                <th class="wide">Documento Nacional</th>
-                <th class="wide">Número de Seguridad Social</th>
+                <th style="width:15%;" class="wide">Nombre</th>
+                <th style="width:12%;" class="wide">DNI</th>
+                <th style="width:15%;" class="wide">NUSS</th>
                 <th style="width:5%;">Sexo</th>
-                <th style="width:5%;">Código Postal</th>
+                <th style="width:10%;">Código Postal</th>
                 <th class="wide">Fecha de Nacimiento</th>
                 <th class="wide">Fecha de Hospitalización</th>
                 <th>Diagnóstico</th>
                 <th>Tratamiento</th>
                 <th>Resultados</th>
+                <th style="width:12%;" class="no-resize">Acción</th>
             </tr>
         </thead>
         <tbody>
@@ -40,17 +127,113 @@
                 <td>{{ row.diagnosis }}</td>
                 <td>{{ row.treatment }}</td>
                 <td>{{ row.results }}</td>
+                <td>
+                    <button class="integrity-btn" onclick="checkIntegrity({{ row.id }})">Verificar</button>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    
-    <div class="pagination" id="merged_table_pagination">
-        <button class="prev">Anterior</button>
-        <button class="next">Siguiente</button>
-    </div>
-    
+<div class="pagination" id="merged_table_pagination">
+    <button class="prev">Anterior</button>
+    <button class="next">Siguiente</button>
+</div>
 </main>
 
-<script src="{% static 'js/database.js' %}"></script>
+<!-- Modal de Integridad -->
+<div id="integrityModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            Verificación de Integridad
+            <button class="close-btn" onclick="closeModal()">Cerrar</button>
+        </div>
+        <div class="modal-body" id="integrityResult"></div>
+    </div>
+</div>
+
+<script>
+function checkIntegrity(id) {
+    // Obtener los datos de la fila actual
+    const row = event.target.closest('tr');
+    const emr = {
+        id: id,
+        name: row.cells[1].textContent,
+        national_id: row.cells[2].textContent,
+        social_security_number: row.cells[3].textContent,
+        sex: row.cells[4].textContent,
+        postal_code: row.cells[5].textContent,
+        birth_date: row.cells[6].textContent,
+        hospitalization_date: row.cells[7].textContent,
+        diagnosis: row.cells[8].textContent,
+        treatment: row.cells[9].textContent,
+        results: row.cells[10].textContent
+    };
+    
+    fetch(`/check-integrity/${id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        const modal = document.getElementById('integrityModal');
+        const resultDiv = document.getElementById('integrityResult');
+        
+        if (data.valid) {
+            resultDiv.innerHTML = `
+                <p><strong>ID:</strong> ${data.id}</p>
+                <p class="integrity-valid">✓ Integridad verificada correctamente</p>
+                <p><strong>Hash calculado:</strong></p>
+                <div class="hash-display">${data.computed}</div>
+                <p><strong>Hash esperado:</strong></p>
+                <div class="hash-display">${data.stored}</div>
+            `;
+        } else {
+            resultDiv.innerHTML = `
+                <p><strong>ID:</strong> ${data.id}</p>
+                <p class="integrity-invalid">✗ Integridad no válida</p>
+                <p><strong>Computed Hash:</strong></p>
+                <div class="hash-display">${data.computed}</div>
+                <p><strong>Stored Hash:</strong></p>
+                <div class="hash-display">${data.stored}</div>
+            `;
+        }        
+
+        modal.style.display = 'block';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al verificar integridad');
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function closeModal() {
+    document.getElementById('integrityModal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('integrityModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+</script>
+
+<script src="{% static 'js/database.js' %}?v=3"></script>
 {% endblock %}

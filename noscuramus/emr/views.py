@@ -1,10 +1,11 @@
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .emr_parser import parse_csv_to_emr_list
 from .partitioning import vertical_data_partitioning
 from .search import hybrid_search
 from .merging import *
 from .models import *
+from .integrity import hash_emr
+from django.http import JsonResponse
 
 def home(request):
     return render(request, 'home.html')
@@ -86,3 +87,20 @@ def merge_full(request):
         'merged_data': tm2
     }
     return render(request, 'full_merge.html', context)
+
+def check_integrity(request, id):
+    try:
+        emr = EMR.objects.get(id=id)
+        computed_hash = hash_emr(emr).hex()
+        stored_checksum = Checksum.objects.get(id=id).checksum
+        
+        return JsonResponse({
+            'id': id,
+            'valid': computed_hash == stored_checksum,
+            'computed': computed_hash,
+            'stored': stored_checksum
+        })
+    except EMR.DoesNotExist:
+        return JsonResponse({'error': 'EMR no encontrado'}, status=404)
+    except Checksum.DoesNotExist:
+        return JsonResponse({'error': 'Checksum no encontrado'}, status=404)

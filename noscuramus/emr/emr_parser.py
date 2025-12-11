@@ -1,9 +1,12 @@
 import csv
 from datetime import datetime
-from .models import EMR
+from .models import EMR, Checksum
+from .integrity import hash_emr
 
 def parse_csv_to_emr_list(csv_path):
     emr_list = []
+    checksum_list = []
+    Checksum.objects.all().delete()
     EMR.objects.all().delete()
 
     with open(csv_path, newline='', encoding='utf-8') as csvfile:
@@ -26,6 +29,13 @@ def parse_csv_to_emr_list(csv_path):
                 results=row['Resultados']
             )
 
+            checksum = Checksum(
+                id=idx,
+                checksum=hash_emr(emr_obj).hex()
+            )
+
             emr_list.append(emr_obj)
+            checksum_list.append(checksum)
     EMR.objects.bulk_create(emr_list)
+    Checksum.objects.bulk_create(checksum_list)
     return emr_list
