@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block override_style %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/database.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="container py-4">
+    <h2 class = "text-center mb-4">Resultados de búsqueda</h2>
+    <div class="tab-pane fade show active" id="tp">
+        <h4>Datos en bruto</h4>
+        <table id="tp_table">
+            <thead>
+                <tr>
+                    <th class="wide">Nombre</th>
+                    <th class="wide">Documento Nacional</th>
+                    <th class="wide">Número de Seguridad Social</th>
+                    <th style="width:5%;">Sexo</th>
+                    <th style="width:5%;">Código Postal</th>
+                    <th class="wide">Fecha de Nacimiento</th>
+                    <th class="wide">Fecha de Hospitalización</th>
+                    <th class="wide">Diagnóstico</th>
+                    <th class="wide">Tratamiento</th>
+                    <th class="wide">Resultados</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                <tr>
+                    <td>{{ row.name }}</td>
+                    <td>{{ row.national_id }}</td>
+                    <td>{{ row.social_security_number }}</td>
+                    <td>{{ row.sex }}</td>
+                    <td>{{ row.postal_code }}</td>
+                    <td>{{ row.birth_date }}</td>
+                    <td>{{ row.hospitalization_date }}</td>
+                    <td>{{ row.diagnosis }}</td>
+                    <td>{{ row.treatment }}</td>
+                    <td>{{ row.results }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination" id="tp_table_pagination">
+            <button class="prev">Anterior</button>
+            <button class="next">Siguiente</button>
+        </div>
+    </div>
+</main>
+{% endblock %}

@@ -2,18 +2,78 @@ from .models import *
 from .clustering import *
 from .emr_parser import *
 from .cipher import *
-
-import pandas
 from .anonypy_custom import Preserver
+from noscuramus.settings import ENCRYPTED_INDEX_DIR, PLAIN_INDEX_DIR
+
+from whoosh.index import create_in
+from whoosh.fields import *
+from whoosh.index import open_dir
+from whoosh.qparser import QueryParser, MultifieldParser
+from whoosh.qparser.dateparse import DateParserPlugin
+from whoosh import qparser, query
+
+import pandas, shutil
+
+def add_eid_to_index(eid):
+    with open(os.path.join(ENCRYPTED_INDEX_DIR, f'{eid[0]:04}.eid'), mode = 'w') as f:
+        for word in eid[1].split(' '):
+            f.write(f'{str(hash_word(word.lower()))}\n')
+
+        f.write(f'{str(hash_word(eid[2].lower()))}\n')
+        f.write(f'{str(hash_word(eid[3].lower()))}\n')
+        f.write(f'{str(hash_word(eid[4].lower()))}\n')
+        f.write(f'{str(hash_word(eid[5].lower()))}\n')
+
+        for word in str(eid[6]).split('-'):
+            f.write(f'{str(hash_word(word.lower()))}\n')
+
+        for word in str(eid[7]).split('-'):
+            f.write(f'{str(hash_word(word.lower()))}\n')
+
+def create_indices(te, tp):
+    if not os.path.exists(ENCRYPTED_INDEX_DIR):
+        os.mkdir(ENCRYPTED_INDEX_DIR)
+
+    for eid in te:
+        add_eid_to_index(eid)
+
+    if not os.path.exists(PLAIN_INDEX_DIR):
+        os.mkdir(PLAIN_INDEX_DIR)
+
+    schema = Schema(
+        id = ID(stored = True),
+        diagnosis = TEXT(stored = True, phrase = False),
+        treatment = TEXT(stored = True, phrase = False),
+        results = TEXT(stored = True, phrase = False)
+    )
+    index = create_in(PLAIN_INDEX_DIR, schema)
+    writer = index.writer()
+
+    for mi in tp:
+        writer.add_document(
+            id = str(mi.id),
+            diagnosis = mi.diagnosis,
+            treatment = mi.treatment,
+            results = mi.results
+        )
+    writer.commit()
 
 def vertical_data_partitioning(t):
     tp = []
     te = []
     ta = []
 
+    te_index = []
+
     MedicalInfo.objects.all().delete()
     EncryptedID.objects.all().delete()
     AnonQID.objects.all().delete()
+
+    if os.path.exists(ENCRYPTED_INDEX_DIR):
+        shutil.rmtree(ENCRYPTED_INDEX_DIR, ignore_errors = True)
+
+    if os.path.exists(PLAIN_INDEX_DIR):
+        shutil.rmtree(PLAIN_INDEX_DIR, ignore_errors = True)
 
     # Obtain Te and Tp
     for i in range(len(t)):
@@ -32,6 +92,17 @@ def vertical_data_partitioning(t):
         )
         te.append(encrypted_id)
     
+        te_index.append((
+            int(emr.id),
+            emr.name,
+            emr.national_id,
+            emr.social_security_number,
+            emr.sex,
+            emr.postal_code,
+            str(emr.birth_date),
+            str(emr.hospitalization_date)
+        ))
+
         # Add all medical information to Tp, verbatim
         medical_info = MedicalInfo(
             id = emr.id,
@@ -83,4 +154,5 @@ def vertical_data_partitioning(t):
     EncryptedID.objects.bulk_create(te)
     AnonQID.objects.bulk_create(ta)
 
+    create_indices(te_index, tp)
     return (tp, te, ta)

@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .emr_parser import parse_csv_to_emr_list
 from .partitioning import vertical_data_partitioning
+from .search import hybrid_search
 from .merging import *
 from .models import *
 
@@ -42,10 +43,29 @@ def erase_dataset(request):
 
     return redirect('database')
 
+def search(request):
+    context = dict()
+    return render(request, 'search.html', context)
+
+def search_results(request):
+    keywords = request.POST.get('search', None)
+
+    if keywords != None and keywords != 'null':
+        keywords = keywords.split(' ')
+
+    ids_scores = hybrid_search(keywords)
+    results = list(EMR.objects.filter(id__in = ids_scores.keys()))
+    results.sort(key = lambda emr: ids_scores[emr.id])
+
+    context = {
+        'results': results
+    }
+    return render(request, 'search_results.html', context)
+
 def merge(request):
-    tp = MedicalInfo.objects.all()
-    ta = AnonQID.objects.all()
-    te = EncryptedID.objects.all()
+    tp = MedicalInfo.objects.order_by('id')
+    ta = AnonQID.objects.order_by('id')
+    te = EncryptedID.objects.order_by('id')
 
     tm1 = data_merging_anon(list(tp), list(ta))
     tm2 = data_merging(list(tp), list(te))

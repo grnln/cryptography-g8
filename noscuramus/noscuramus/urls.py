@@ -26,5 +26,6 @@ urlpatterns = [
     path('database/erase', views.erase_dataset, name='erase_db'),
     path('load-csv', views.loaded_dataset, name='load_csv'),
     path('partition', views.vertical_partition, name='vertical_partition'),
-    path('merge/', views.merge)
+    path('search/', views.search, name='search'),
+    path('search-results/', views.search_results, name='search_results')
 ]

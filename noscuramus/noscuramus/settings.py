@@ -129,3 +129,6 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ENCRYPTED_INDEX_DIR = BASE_DIR / 'encrypted_index'
+PLAIN_INDEX_DIR = BASE_DIR / 'plain_index'

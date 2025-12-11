@@ -1,7 +1,7 @@
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 
-import os
+import os, hmac, hashlib
 
 def init_cipher(nonce):
     if os.path.exists('aes.key'):
@@ -25,3 +25,14 @@ def decipher_text(t):
     tag = t[16:32]
     text = t[32:]
     return init_cipher(nonce).decrypt_and_verify(text, tag).decode(encoding = 'utf-8')
+
+def hash_word(w):
+    if os.path.exists('aes.key'):
+        with open('aes.key', mode = 'rb') as f:
+            key = f.read()
+    else:
+        key = get_random_bytes(32)
+    
+        with open('aes.key', mode = 'wb') as f:
+            f.write(key)
+    return hmac.new(key, bytearray(w, encoding = 'utf-8'), hashlib.sha256).digest()
