@@ -51,5 +51,5 @@ def merge(request):
     tm2 = data_merging(list(tp), list(te))
 
     output = "<h1>Tm1</h1>" + "<br>".join([str(p) for p in tm1])
-    output = "<h1>Tm2</h1>" + "<br>".join([str(p) for p in tm2])
+    output += "<h1>Tm2</h1>" + "<br>".join([str(p) for p in tm2])
     return HttpResponse(output)

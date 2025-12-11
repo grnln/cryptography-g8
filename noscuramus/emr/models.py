@@ -73,6 +73,10 @@ class AnonMergedData:
 
 @dataclass
 class MergedData:
+    name: str
+    national_id: str
+    social_security_number: str
+
     sex: str
     postal_code: str
     birth_date: date
@@ -83,4 +87,4 @@ class MergedData:
     results: str
 
     def __str__(self):
-        return f"{self.sex} - {self.birth_date} - {self.diagnosis}"
+        return f"{self.name} - {self.sex} - {self.birth_date} - {self.diagnosis}"

@@ -23,6 +23,9 @@ def data_merging(tp, te):
     
     for i in range(len(tp)):
         merged_data = MergedData(
+            name = decipher_text(te[i].name),
+            national_id = decipher_text(te[i].national_id),
+            social_security_number = decipher_text(te[i].social_security_number),
             sex = decipher_text(te[i].sex),
             postal_code = decipher_text(te[i].postal_code),
             birth_date = datetime.strptime(decipher_text(te[i].birth_date), '%Y-%m-%d'),
