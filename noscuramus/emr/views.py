@@ -4,8 +4,8 @@ from .partitioning import vertical_data_partitioning
 from .search import hybrid_search
 from .merging import *
 from .models import *
-from .integrity import hash_emr
-from django.http import JsonResponse
+from .integrity import hash_emr, remoteIntegrityCheck
+from django.http import JsonResponse, HttpResponse
 
 def home(request):
     return render(request, 'home.html')
@@ -104,3 +104,9 @@ def check_integrity(request, id):
         return JsonResponse({'error': 'EMR no encontrado'}, status=404)
     except Checksum.DoesNotExist:
         return JsonResponse({'error': 'Checksum no encontrado'}, status=404)
+
+def remote_integrity_check(request):
+    nBlocks = EMR.objects.count() // 4
+    randomSeed = 12345
+    res = remoteIntegrityCheck(nBlocks, randomSeed)
+    return HttpResponse("Remote Integrity Check Placeholder. Res = " + str(res))

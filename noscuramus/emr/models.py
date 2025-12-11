@@ -26,6 +26,9 @@ class Checksum(models.Model):
     def __str__(self):
         return f"{self.name} - {self.national_id}"
 
+class BlockTag(models.Model):
+    id = models.BigAutoField(primary_key = True)
+    tag = models.BigIntegerField()
 
 class MedicalInfo(models.Model):
     id = models.BigAutoField(primary_key=True)
