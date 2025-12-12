@@ -6,3 +6,4 @@ from .models import *
 admin.site.register(MedicalInfo)
 admin.site.register(AnonQID)
 admin.site.register(EncryptedID)
+admin.site.register(EMR)

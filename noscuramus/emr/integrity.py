@@ -1,5 +1,5 @@
 import hashlib
-from .models import Checksum, BlockTag
+from .models import Checksum, BlockTag, EMR
 import random
 import math
 import hmac
@@ -7,6 +7,18 @@ import hmac
 def hash_emr(emr):
     x = compute_checksum_input(emr)
     return hashlib.sha256(x).digest()
+
+def compute_emr_string_hash(emr):
+    emr_string = (
+        f"{emr.id},{emr.name},{emr.national_id},{emr.social_security_number},"
+        f"{emr.sex},{emr.postal_code},{emr.birth_date.isoformat()},"
+        f"{emr.hospitalization_date.isoformat()},{emr.diagnosis},"
+        f"{emr.treatment},{emr.results}"
+    )
+    emr_bytes = emr_string.encode('utf-8')
+    hash_bytes = hashlib.sha256(emr_bytes).digest()
+    hash_int = int.from_bytes(hash_bytes, byteorder='big')
+    return hash_int
 
 def compute_checksum_input(emr):
     x = emr.id.to_bytes(8, byteorder='big')
@@ -43,7 +55,7 @@ def check_integrity(id, emr):
 
 def tag_gen(N, g, m_list):
     BlockTag.objects.all().delete()
-    # m_list of the form [(index, m)]
+
     D_list = []
     for m in m_list:
         D_list.append(BlockTag(id=m[0], tag=int(pow(g, m[1], N))))
@@ -68,7 +80,6 @@ def genIndices(total_blocks, num_to_check, random_seed):
         indices.add(idx)
         i += 1
 
-    print(list(indices))
     return list(indices)
 
 def challenge(g, N, s):
@@ -95,16 +106,13 @@ def remoteIntegrityCheck(nBlocks, randomSeed):
     N = p * q # PUBLIC
     g = 2 # PUBLIC
 
-    m_list = [(i, random.randint(1, 1000)) for i in range(1200)] # TO BE OBTAINED FROM EMR DATABASE
-
-    # TAG GEN
-
-    tag_gen(N, g, m_list)
-
     s = random.randint(1, N - 1) # SECRET TO SERVER
     gS = challenge(g, N, s) # GEN BY CLIENT. PUBLIC
 
-    R_server = genProof(nBlocks, randomSeed, m_list, N ,gS, len(m_list)) # FROM GS AND M_LIST (current)
-    R_client = checkProof(nBlocks, randomSeed, N, s, len(m_list)) # FROM S AND TAGS (original m_list)
+    emr_list = EMR.objects.order_by("id")
+    current_emrs = [(emr_list[i].id, compute_emr_string_hash(emr_list[i])) for i in range(len(emr_list))]
+
+    R_server = genProof(nBlocks, randomSeed, current_emrs, N ,gS, len(current_emrs)) # FROM GS AND M_LIST (current)
+    R_client = checkProof(nBlocks, randomSeed, N, s, len(current_emrs)) # FROM S AND TAGS (original m_list)
 
     return R_server == R_client

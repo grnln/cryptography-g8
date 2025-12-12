@@ -33,4 +33,5 @@ urlpatterns = [
     path('merge/full', views.merge_full, name='merge_full'),
     path('check-integrity/<int:id>/', views.check_integrity, name='check_integrity'),
     path('remote-integrity-check/', views.remote_integrity_check, name='remote_integrity_check'),
+    path('remote-integrity-check/verify/', views.remote_integrity_check_verify, name='remote_integrity_check_verify')
 ]

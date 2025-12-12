@@ -107,8 +107,32 @@ def check_integrity(request, id):
     except Checksum.DoesNotExist:
         return JsonResponse({'error': 'Checksum no encontrado'}, status=404)
 
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+import json
+
+# Vista para mostrar el formulario
 def remote_integrity_check(request):
-    nBlocks = EMR.objects.count() // 4
-    randomSeed = 12345
-    res = remoteIntegrityCheck(nBlocks, randomSeed)
-    return HttpResponse("Remote Integrity Check Placeholder. Res = " + str(res))
+    context = {
+        'max_blocks': EMR.objects.count()
+    }
+    return render(request, 'remote_checking.html', context)
+
+# Vista para procesar la verificación
+@require_http_methods(["POST"])
+def remote_integrity_check_verify(request):
+    try:
+        data = json.loads(request.body)
+        num_blocks = data.get('num_blocks')
+        random_seed = data.get('random_seed')
+        
+        valid = remoteIntegrityCheck(num_blocks, random_seed)
+        
+        return JsonResponse({
+            'valid': valid,
+            'blocks_checked': num_blocks
+        })
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=400)

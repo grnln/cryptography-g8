@@ -1,0 +1,418 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block override_style %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/database.css' %}">
+<style>
+    .hash-display {
+        background-color: #f5f5f5;
+        padding: 8px;
+        border-radius: 4px;
+        word-break: break-all;
+        font-family: monospace;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
+
+    .integrity-btn {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .integrity-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    }
+
+    .form-group .helper-text {
+        font-size: 0.8rem;
+        color: #666;
+        margin-top: 4px;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .button-group button {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-check {
+        background-color: #007bff;
+        color: white;
+        flex: 1;
+    }
+
+    .btn-check:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-generate {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-generate:hover {
+        background-color: #5a6268;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 5% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modal-header {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .modal-body {
+        margin-bottom: 15px;
+        line-height: 1.6;
+    }
+
+    .result-item {
+        margin-bottom: 15px;
+    }
+
+    .result-item strong {
+        display: block;
+        margin-bottom: 5px;
+    }
+    
+    .integrity-valid {
+        color: #28a745;
+        font-weight: bold;
+    }
+    
+    .integrity-invalid {
+        color: #dc3545;
+        font-weight: bold;
+    }
+    
+    .close-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .close-btn:hover {
+        background-color: #0056b3;
+        transition: background-color 0.3s;
+    }
+
+    .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #007bff;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 12px;
+        border-radius: 4px;
+        border: 1px solid #f5c6cb;
+    }
+
+    .form-container {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .form-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #333;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<main class="container py-4" style="max-width: 600px;">
+    <h2 class="mb-4">Verificación de Integridad Remota</h2>
+    
+    <div class="form-container">
+        <div class="form-title">Parámetros de Verificación</div>
+        <form id="integrityForm">
+            <div class="form-group">
+                <label for="numBlocks">Número de Bloques a Comprobar</label>
+                <input 
+                    type="number" 
+                    id="numBlocks" 
+                    name="numBlocks" 
+                    min="1" 
+                    value="10" 
+                    required
+                >
+                <div class="helper-text" id="blocksHelper"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="randomSeed">Semilla Aleatoria (Número Entero)</label>
+                <input 
+                    type="number" 
+                    id="randomSeed" 
+                    name="randomSeed" 
+                    placeholder="Dejar vacío para generar automáticamente"
+                >
+                <div class="helper-text">O haz clic en "Generar Semilla" para crear una automáticamente</div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="integrity-btn btn-generate" id="generateSeedBtn">Generar Semilla</button>
+                <button type="submit" class="integrity-btn btn-generate" style="background-color: green;">Verificar Integridad</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- Modal de Resultado -->
+<div id="resultModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            Resultado de Verificación
+            <button type="button" class="close-btn" onclick="closeModal()">Cerrar</button>
+        </div>
+        <div id="loadingSpinner" class="loading">
+            <div class="spinner"></div>
+            <p>Verificando integridad...</p>
+        </div>
+        <div id="modalBody" class="modal-body"></div>
+    </div>
+</div>
+
+<script>
+    const maxBlocks = {{ max_blocks }};
+    const generateSeedBtn = document.getElementById('generateSeedBtn');
+    const randomSeedInput = document.getElementById('randomSeed');
+    const numBlocksInput = document.getElementById('numBlocks');
+    const blocksHelper = document.getElementById('blocksHelper');
+    const integrityForm = document.getElementById('integrityForm');
+    const resultModal = document.getElementById('resultModal');
+    const modalBody = document.getElementById('modalBody');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+
+    // Actualizar texto de ayuda para bloques
+    numBlocksInput.setAttribute('max', maxBlocks);
+    blocksHelper.textContent = `Ingresa un número entre 1 y ${maxBlocks}`;
+
+    // Generar semilla aleatoria
+    generateSeedBtn.addEventListener('click', () => {
+        const seed = Math.floor(Math.random() * 2147483647);
+        randomSeedInput.value = seed;
+    });
+
+    // Enviar formulario
+    integrityForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const numBlocks = parseInt(document.getElementById('numBlocks').value);
+        let randomSeed = document.getElementById('randomSeed').value;
+
+        // Validar número de bloques
+        if (numBlocks < 1 || numBlocks > maxBlocks) {
+            alert(`El número de bloques debe estar entre 1 y ${maxBlocks}`);
+            return;
+        }
+
+        // Generar semilla si está vacía
+        if (!randomSeed) {
+            randomSeed = Math.floor(Math.random() * 2147483647);
+        } else {
+            randomSeed = parseInt(randomSeed);
+        }
+
+        // Mostrar modal y loading
+        resultModal.style.display = 'block';
+        loadingSpinner.style.display = 'block';
+        modalBody.innerHTML = '';
+
+        try {
+            const response = await fetch('/remote-integrity-check/verify/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    num_blocks: numBlocks,
+                    random_seed: randomSeed
+                })
+            });
+
+            const data = await response.json();
+            loadingSpinner.style.display = 'none';
+
+            if (response.ok) {
+                displayResults(data, numBlocks, randomSeed);
+            } else {
+                displayError(data.error || 'Error en la verificación');
+            }
+        } catch (error) {
+            loadingSpinner.style.display = 'none';
+            displayError('Error de conexión: ' + error.message);
+            console.error('Error:', error);
+        }
+    });
+
+    function displayResults(data, numBlocks, randomSeed) {
+        let html = `
+            <div class="result-item">
+                <strong>Número de bloques:</strong>
+                <div class="hash-display">${numBlocks}</div>
+            </div>
+            <div class="result-item">
+                <strong>Semilla aleatoria:</strong>
+                <div class="hash-display">${randomSeed}</div>
+            </div>
+        `;
+
+        if (data.valid) {
+            html += `<p class="integrity-valid">✓ Integridad verificada correctamente</p>`;
+        } else {
+            html += `<p class="integrity-invalid">✗ Integridad no válida</p>`;
+        }
+
+        if (data.computed_hash) {
+            html += `
+                <div class="result-item">
+                    <strong>Hash calculado:</strong>
+                    <div class="hash-display">${data.computed_hash}</div>
+                </div>
+            `;
+        }
+
+        if (data.stored_hash) {
+            html += `
+                <div class="result-item">
+                    <strong>Hash esperado:</strong>
+                    <div class="hash-display">${data.stored_hash}</div>
+                </div>
+            `;
+        }
+
+        if (data.blocks_checked) {
+            html += `
+                <div class="result-item">
+                    <strong>Bloques verificados:</strong>
+                    <div class="hash-display">${data.blocks_checked}</div>
+                </div>
+            `;
+        }
+
+        modalBody.innerHTML = html;
+    }
+
+    function displayError(errorMessage) {
+        const html = `<div class="error-message">${errorMessage}</div>`;
+        modalBody.innerHTML = html;
+    }
+
+    function closeModal() {
+        resultModal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target === resultModal) {
+            resultModal.style.display = 'none';
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+{% endblock %}
